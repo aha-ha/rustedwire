@@ -22,6 +22,8 @@ async function peer1() {
     await pc.setLocalDescription(offer);
     console.log('p1 ready to pair')
     store(offer, 'offer')
+    dc.onmessage = (e) => addMsg(e.data, 'Partner');
+    dc.onopen = () => addMsg('Connected!', 'System');
 
 
 }
@@ -60,4 +62,26 @@ window.onstorage = async (e) => {
 pc.ondatachannel = (e) => {
     window.dc = e.channel;
     console.log('got channel');
+    window.dc.onmessage = (ev) => addMsg(ev.data, 'Partner');
+    window.dc.onopen = () => addMsg('Connected!', 'System')
+}
+
+const chat = document.getElementById('chat');
+const input = document.getElementById('msg');
+
+function addMsg(text,  sender) {
+    const el = document.createElement('div');
+    el.innerText = `${sender}: ${text}`;
+    chat.appendChild(el);
+    chat.scrollTop = chat.scrollHeight; //autoscroll   
+}
+
+// send message
+document.getElementById('send').onclick = () => {
+    const text = input.value;
+    if (window.dc && window.dc.readyState === 'open') {
+        window.dc.send(text);
+        addMsg(text, 'Me');
+        input.value = '';
+    }
 }
