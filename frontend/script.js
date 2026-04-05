@@ -17,13 +17,13 @@ document.getElementById('clear').addEventListener('click', clear);
 document.getElementById('status').addEventListener('click', stat);
 
 async function peer1() {
-    const dc = pc.createDataChannel('demo');
+    window.dc = pc.createDataChannel('demo');
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
     console.log('p1 ready to pair')
     store(offer, 'offer')
-    dc.onmessage = (e) => addMsg(e.data, 'Partner');
-    dc.onopen = () => addMsg('Connected!', 'System');
+    window.dc.onmessage = (e) => addMsg(e.data, 'Partner');
+    window.dc.onopen = () => addMsg('Connected!', 'System');
 
 
 }
